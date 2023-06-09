@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    .app {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .container {
+      width: 200px;
+      height: 300px;
+      border: 1px solid #ccc;
+      padding: 10px;
+      float: left;
+    }
+    .item {
+      padding: 10px;
+      margin-bottom: 10px;
+      background-color: #f2f2f2;
+      border: 1px solid #ccc;
+      cursor: grab;
+    }
+    .item.dragging {
+      opacity: 0.5;
+      border: 1px dashed #ccc;
+    }
+    #second-container {
+      background-color: #f9f9f9;
+    }
+    .reset-button {
+      margin-top: 10px;
+      margin:5px
+    }
+  </style>
+  <script>
+    let originalFirstContainerContent; // Variable to store the original content of the first container
+
+    window.addEventListener('DOMContentLoaded', () => {
+      const items = document.querySelectorAll('.item');
+      const secondContainer = document.getElementById('second-container');
+      const resetButton = document.getElementById('reset-button');
+      const firstContainer = document.querySelector('.container:first-child');
+
+      items.forEach(item => {
+        item.addEventListener('dragstart', dragStart);
+      });
+
+      secondContainer.addEventListener('dragover', dragOver);
+      secondContainer.addEventListener('drop', drop);
+
+      resetButton.addEventListener('click', reset);
+      originalFirstContainerContent = firstContainer.innerHTML; // Store the original content of the first container
+    });
+
+    function dragStart(event) {
+      event.dataTransfer.setData('text/plain', event.target.id);
+      event.target.classList.add('dragging');
+    }
+
+    function dragOver(event) {
+      event.preventDefault();
+    }
+
+    function drop(event) {
+      event.preventDefault();
+      const itemId = event.dataTransfer.getData('text/plain');
+      const item = document.getElementById(itemId);
+      item.classList.remove('dragging');
+      event.target.appendChild(item);
+    }
+
+    function reset() {
+      const firstContainer = document.querySelector('.container:first-child');
+      const secondContainer = document.getElementById('second-container');
+
+      secondContainer.innerHTML = '';
+      firstContainer.innerHTML = originalFirstContainerContent; // Restore the original content of the first container
+      const items = document.querySelectorAll('.item');
+      items.forEach(item => {
+        item.addEventListener('dragstart', dragStart);
+      });
+    }
+  </script>
+</head>
+<body>
+  <div class="app">
+    <div class="container">
+      <div class="item" id="item1" draggable="true">Item 1</div>
+      <div class="item" id="item2" draggable="true">Item 2</div>
+      <div class="item" id="item3" draggable="true">Item 3</div>
+    </div>
+    <div class="container" id="second-container"></div>
+    <button class="reset-button" id="reset-button">Reset</button>
+  </div>
+</body>
+</html>
